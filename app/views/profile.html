@@ -1,0 +1,7 @@
+<form>
+  <label>First Name</label>
+  <input name='firstName' type='text' value='{{# user }}{{get "firstName"}}{{/ user }}'>
+  <label>Last Name</label>
+  <input name='lastName' type='text' value='{{# user }}{{get "lastName"}}{{/ user }}'>
+  <button>Submit</button>
+</form>

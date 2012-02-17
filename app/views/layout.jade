@@ -1,0 +1,39 @@
+!!! 5
+html
+  head
+    title Rdio and Backbone test app
+    link(rel='stylesheet', href='/css/base.css')
+    script
+      var playbackToken = "#{ playbackToken }";
+    script(src='/browserify.js')
+    script(src='/js/handlebars.js')
+    script(src='/js/jquery.js')
+    script(src='/js/swfobject.js')
+    script(src='/js/underscore.js')
+    script(src='/js/backbone.js')
+    script(src='/js/backbone_memory_store.js')
+    script(src='/js/application.js')
+
+  body
+    header
+      .container_12
+        #user
+          #info
+          a(href='#profile') Edit Profile 
+        
+        h1.grid_12
+          a(href='#')
+            img(src='/images/logo.png')
+
+    .container_12
+      #content.grid_12
+        #player
+        form#search_form(action='#/search')
+          label Search
+          input(type='text', placeholder='Enter a song or artist')
+        
+        #body
+          != body
+
+    #player_container
+

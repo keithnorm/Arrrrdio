@@ -1,0 +1,37 @@
+{{# results }}
+  <div id='search_results'>
+  <h1>Artists</h1>
+  <ul>
+    {{# artists }}
+      <li>
+      <a href='#artists/{{ get "key" }}'>
+          <img src='{{ get "icon" }}'>
+        </a>
+      </li>
+    {{/ artists }}
+  </ul>
+
+  <h1>Albums</h1>
+  <ul>
+    {{# albums }}
+      <li>
+        <a class='' href='#albums/{{ get "key" }}'>
+          <img src='{{ get "icon" }}'>
+        </a>
+      </li>
+    {{/ albums }}
+  </ul>
+
+  <h1>Tracks</h1>
+  <ul>
+    {{# tracks }}
+      <li>
+        <a class='play btn' data-track='{{ json toJSON }}'>
+          <h2>{{ get "name" }}</h2>
+          <h3>By: {{ get "albumArtist" }}</h3>
+        </a>
+      </li>
+    {{/ tracks }}
+  </ul>
+</div>
+{{/ results }}

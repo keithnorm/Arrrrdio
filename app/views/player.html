@@ -1,0 +1,21 @@
+<div id='player_ui'>
+  <ul class='controls'>
+    <li>
+      <a class='play'>Play</a>
+    </li>
+    <li>
+      <a class='stop'>Stop</a>
+    </li>
+  </ul>
+  <div class='playing_status'>
+    {{# track }}
+      <div class='currently_playing'>
+        <h1>{{ get "albumArtist" }}</h1>
+        <h2>{{ get "name" }}</h2>
+      </div>
+    {{/ track }}
+    <div class='status'>
+      <div class='meter'></div>
+    </div>
+  </div>
+</div>

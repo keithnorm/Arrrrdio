@@ -1,0 +1,15 @@
+{ 
+  "name" : "rdio",
+  "version" : "0.0.1",
+  "dependencies" : {
+    "express" : "2.5.6",
+    "rdio" : ">=0",
+    "oauth" : ">=0",
+    "jade": ">=0",
+    "querystring": ">=0",
+    "underscore" : ">=0",
+    "browserify" : ">=0",
+    "fileify": ">=0"
+  }
+}
+

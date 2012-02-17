@@ -1,0 +1,10 @@
+<ul id='top_charts'>
+  {{# tracks }}
+  <li>
+    <a class='play btn' data-track='{{ json this }}'>
+      <img src='{{ get "icon" }}'>
+      <h2>{{ get "name" }}</h2>
+    </a>
+  </li>
+  {{/ tracks }}
+</ul>

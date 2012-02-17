@@ -1,0 +1,23 @@
+{{# album }}
+<div class='container_12'>
+  <h1> {{ get "artist" }}</h1>
+  <div class='grid_4'>
+    <div class='icon'>
+      <img src='{{ get "icon" }}'>
+    </div>
+  </div>
+
+  <div class='grid_6'>
+    <ul>
+      {{# tracks }}
+      <li> 
+      <a class='play btn' data-track='{{ json this }}'>
+        <h3>{{ name }}</h3>
+      </a>
+      </li>
+      {{/ tracks }}
+    </ul>
+  </div>
+
+</div>
+{{/ album }}
