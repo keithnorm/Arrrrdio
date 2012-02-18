@@ -73,7 +73,7 @@ app.get('/', function(req, res){
       rdio.getPlaybackToken(
         req.session.oauth_access_token,
         req.session.oauth_access_token_secret,
-        'http://arrrrdio.herokuapp.com/',
+        'arrrrdio.herokuapp.com',
         function(err, data, response) {
           //if(err) throw new Error(err);
           console.log("IN HERE", data);
