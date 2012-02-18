@@ -52,7 +52,7 @@ app.configure(function(){
 var rdio = require('rdio')({
   rdio_api_key: 'mpmzsmhezn5xutcp8mruuws4', 
   rdio_api_shared: '8h6jJmmNQV',
-  callback_url: 'http://localhost:3080/oauth/callback'
+  callback_url: 'http://arrrrdio.herokuapp.com/oauth/callback'
 });
 
 // Routes
@@ -73,7 +73,7 @@ app.get('/', function(req, res){
       rdio.getPlaybackToken(
         req.session.oauth_access_token,
         req.session.oauth_access_token_secret,
-        'localhost',
+        'http://arrrrdio.herokuapp.com/',
         function(err, data, response) {
           //if(err) throw new Error(err);
           console.log("IN HERE", data);
