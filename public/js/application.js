@@ -55,9 +55,9 @@ App.Router = Backbone.Router.extend({
   album: function(id) {
     var album = new App.Album({id: id});
     album.fetch({
-      success: function(resp) {
+      success: function(album, response) {
         new App.Views.Album({
-          album: resp
+          album: album
         });
       }
     });
@@ -215,7 +215,6 @@ App.Views.Album = Backbone.View.extend({
   },
 
   render: function() {
-    console.log(this.album);
     var template = Handlebars.compile(this.template);
     this.$el.html(
       template(this)
