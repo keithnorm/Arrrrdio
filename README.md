@@ -1,5 +1,7 @@
 # What's This?
-It's the app I used to talk about how Backbone apps are written at the inaugural meeting of [BayQuery](http://www.meetup.com/bayQuery/)!
+Check it out! [Arrrrdio](http://arrrrdio.herokuapp.com/)
+
+It's the app I used to talk about how Backbone apps are written at the inaugural meeting of [BayQuery](http://www.meetup.com/bayQuery/).
 
 ## Start 'er up
 Install node first if you don't have it, then: 
