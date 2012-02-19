@@ -8,9 +8,6 @@ var express = require('express')
   , _ = require('underscore')
 	, querystring = require('querystring')
   , fileify = require('fileify');
-
-var token = 'rkwa3zkamu9h9mfep7uk6mem87mmd2bxzjxhr9xdskh9p7hchm8ad8feddhmch9j';
-var secret = 'PPjCSNFSkKru';
 	
 var app = express.createServer();
 var AppConfig = {};
@@ -237,6 +234,23 @@ app.get('/users/:id', function(req, res) {
       user: req.params.id,
       type: 'albums',
       limit: 12
+    }, 
+    function(err, data, response) {
+      res.send(JSON.parse(data).result);
+    }
+  );
+});
+
+app.get('/users/:id/friends', function(req, res) {
+  rdio.api(
+    req.session.oauth_access_token,
+    req.session.oauth_access_token_secret,
+    {
+      method: 'userFollowing',
+      user: req.params.id,
+      type: 'albums',
+      limit: 24,
+      extras: 'lastSongPlayed, lastSongPlayTime, username'
     }, 
     function(err, data, response) {
       res.send(JSON.parse(data).result);

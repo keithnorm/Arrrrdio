@@ -1,3 +1,10 @@
 <div class='user_info'>
   <h1>Hi, {{ get "firstName" }} {{ get "lastName" }}</h1>
+  <nav>
+    <ul class='user_nav'>
+      <li>
+        <a href='#users/{{ get "key" }}/friends'>Friends</a>
+      </li>
+    </ul>
+  </nav>
 </div>

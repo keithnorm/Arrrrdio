@@ -43,6 +43,10 @@ header .container_12 {
   font-size: 14px;
 }
 
+.user_nav {
+  display: none;
+}
+
 .auth {
   background: url('/images/connect.png') no-repeat center;
   display: block;

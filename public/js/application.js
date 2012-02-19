@@ -31,7 +31,8 @@ App.Router = Backbone.Router.extend({
     '': 'root',
     'search/:query': 'search',
     'profile': 'profile',
-    'albums/:id': 'album'
+    'albums/:id': 'album',
+    'users/:id/friends': 'friends'
   },
 
   root: function() {
@@ -74,6 +75,19 @@ App.Router = Backbone.Router.extend({
   profile: function() {
     new App.Views.Profile({
       user: App.currentUser
+    });
+  },
+
+  friends: function() {
+    var friends = new App.Friends([], {
+      user: App.currentUser
+    });
+    friends.fetch({
+      success: function(friends, resp) {
+        new App.Views.Friends({
+          friends: friends
+        });
+      }
     });
   },
 
@@ -140,6 +154,19 @@ App.Albums = Backbone.Collection.extend({ model: App.Album });
 App.UsersHeavyRotation = App.Albums.extend({
   url: function() {
     return '/users/' + App.currentUser.get('key');
+  }
+});
+
+App.Friends = Backbone.Collection.extend({
+  model: App.User,
+
+  url: function() {
+    console.log(this);
+    return '/users/' + this.user.get('key') + '/friends';
+  },
+
+  initialize: function(models, options) {
+    this.user = options.user;
   }
 });
 
@@ -244,6 +271,23 @@ App.Views.Album = Backbone.View.extend({
   },
 
   render: function() {
+    var template = Handlebars.compile(this.template);
+    this.$el.html(
+      template(this)
+    );
+  }
+});
+
+App.Views.Friends = Backbone.View.extend({
+  el: '#body',
+  template: Templates['friends.html'],
+  initialize: function() {
+    this.friends = this.options.friends.models;
+    this.render();
+  },
+
+  render: function() {
+    console.log(this);
     var template = Handlebars.compile(this.template);
     this.$el.html(
       template(this)
