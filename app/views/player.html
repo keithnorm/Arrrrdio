@@ -1,10 +1,9 @@
 <div id='player_ui'>
   <ul class='controls'>
     <li>
-      <a class='play'>Play</a>
-    </li>
-    <li>
-      <a class='stop'>Stop</a>
+      <a class='play'>
+        <span>4</span>
+      </a>
     </li>
   </ul>
   <div class='playing_status'>
@@ -15,7 +14,11 @@
       </div>
     {{/ track }}
     <div class='status'>
-      <div class='meter'></div>
+      <span class='time'>0:00</span>
+      <div class='bar'>
+        <div class='meter'></div>
+      </div>
+      <span class='total'>{{ formattedDuration }}</span>
     </div>
   </div>
 </div>

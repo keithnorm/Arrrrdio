@@ -220,10 +220,6 @@ App.Views.SearchResults = Backbone.View.extend({
 App.Views.TopCharts = Backbone.View.extend({
   el: '#body',
   template: Templates['top_charts.html'],
-
-  events: {
-    'click .play[data-track]': 'playTrack'
-  },
   
   initialize: function() {
     this.tracks = this.options.tracks.models;
@@ -235,11 +231,6 @@ App.Views.TopCharts = Backbone.View.extend({
     this.$el.html(
       template(this)
     );
-  },
-
-  playTrack: function(e) {
-    var track = $(e.target).parents('a').data('track');
-    App.player.play(track);
   }
 });
 
@@ -310,6 +301,9 @@ App.Views.Player = Backbone.View.extend({
   el: '#player_container',
   template: Templates['player.html'],
 
+  pauseBtnCode: '5',
+  playBtnCode: '4',
+
   events: {
     'click #player_ui .stop': 'pause',
     'click #player_ui .play': 'play'
@@ -317,14 +311,20 @@ App.Views.Player = Backbone.View.extend({
 
   initialize: function() {
     this.renderedSWF = false;
-    this.render();
     this.track = new App.Track();
+    this.isPlaying = false;
+    this.render();
     this.track.bind('change:name', this.render.bind(this));
     this.track.bind('change:position', this.changedPosition.bind(this));
+    this.bind('paused', this.onPause);
+    this.bind('playing', this.onPlay);
   },
 
   play: function(track) {
-    console.log('track is', track);
+    // if it's playing and play was called from an event...?
+    if(this.isPlaying && (!track || !track.name)) {
+      return this.pause();
+    }
     if(track && track.key) {
       this.track.set(track);
       console.log(this.track);
@@ -332,16 +332,24 @@ App.Views.Player = Backbone.View.extend({
     }
     else //resume
       this.player.rdio_play();
+    this.isPlaying = true;
+    this.trigger('playing');
+    return this;
   },
 
   stop: function() {
     console.log('stop');
+    this.isPlaying = false;
     this.player.rdio_stop();
+    return this;
   },
 
   pause: function() {
     console.log('pause');
+    this.isPlaying = false;
     this.player.rdio_pause();
+    this.trigger('paused');
+    return this;
   },
 
   render: function() {
@@ -355,12 +363,38 @@ App.Views.Player = Backbone.View.extend({
     this.$el.html(
       template(this) 
     );
+    this.btn = this.$el.find('.play span');
+  },
+
+  onPause: function() {
+    this.btn.html(this.playBtnCode);
+  },
+
+  onPlay: function() {
+    this.btn.html(this.pauseBtnCode);
   },
 
   changedPosition: function() {
     this.$el.find('.meter').width(
       (this.track.get('position') / this.track.get('duration')) * 100 + "%"
     );
+    this.$el.find('.time').html(this.formattedPosition());
+  },
+
+  formattedPosition: function() {
+    return this._formatToMinutesSeconds(this.track.get('position'));
+  },
+
+  formattedDuration: function() {
+    return this._formatToMinutesSeconds(this.track.get('duration'));
+  },
+
+  _formatToMinutesSeconds: function(seconds) {
+    if(!seconds)
+      return '0:00';
+    var minutes = parseInt(seconds / 60, 10);
+    seconds = parseInt(seconds % 60, 10);
+    return minutes + ':' + (seconds >= 10 ? seconds : '0' + seconds);
   },
 
 	ready: function() {
