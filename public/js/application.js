@@ -446,29 +446,14 @@ $.fn.serialize = (function(oldSerialize) {
   };
 })($.fn.serialize);
 
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-29309585-1']);
+_gaq.push(['_trackPageview']);
 
-Groupon = {};
-Groupon.refreshCSS = function() {
-  var i,a,s;
-  a=document.getElementsByTagName('link');
-  for(i=0;i<a.length;i++){
-    s=a[i];
-    if(s.rel.toLowerCase().indexOf('stylesheet')>=0&&s.href) {
-      var h=s.href.replace(/(&|%5C?)forceReload=\d+/,'');
-      s.href=h+(h.indexOf('?')>=0?'&':'?')+'forceReload='+(new Date().valueOf());
-    }
-  }
-};
-//start sass watch command like this
-//sass --watch public/stylesheets/sass:public/stylesheets --load-path public/stylesheets/sass --load-path public/stylesheets/sass/base --load-path --load-path public/stylesheets/sass/base --load-path public/stylesheets/sass/app/shared --debug-info --require ./lib/sass_extensions.rb --require ./lib/asset_fingerprint_cache.rb
+$(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('body')[0]; s.appendChild(ga);
+});
 
-$(document).bind('focus', function(e){
- Groupon.refreshCSS();
-});
-//
-$(document).bind('keydown', function(e){
-// // mapped to ctrl + R, but feel free to change it if you want
- if(e.keyCode == 82 && e.ctrlKey)
-  Groupon.refreshCSS();
-});
 

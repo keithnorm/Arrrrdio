@@ -12,6 +12,7 @@ body {
   background-size: 70px 120px;
   font: 62.5% / 1.5 arial, verdana, sans-serif;
   margin: 0;
+  overflow-x: hidden;
   padding: 0;
 }
 
@@ -630,5 +631,78 @@ body {
 .clearfix,
 .container_12 {
   zoom: 1;
+}
+
+
+#github {
+  right: -60px;
+  height: 30px;
+  top: 52px;
+  position: absolute;
+  text-decoration: none;
+  width: 250px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+}
+  
+#github span {
+  background: #bada55;
+  border: 1px solid #fff;
+  color: #333;
+  font-size: 14px;
+  left: 0;
+  padding: 5px 0;
+  position: absolute;
+  text-align: center;
+  width: 250px;
+  box-shadow: rgba(black, 0.2) 1px 1px 10px;
+  /*@include transition(opacity, 1s);*/
+}
+
+#github span:first-child:before {
+  content: '';
+  display: block;
+  background: url('https://github.com/favicon.ico') no-repeat;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 7px;
+  left: 45px;
+}
+
+#github span:last-child {
+  background: #000;
+  color: #fff;
+  opacity: 0;
+}
+
+#github:hover span:first-child {
+  opacity: 0;
+}
+
+#github:hover span:last-child {
+  opacity: 1;
+}
+
+@media all and (-webkit-transform-3d) {
+  #github span {
+    opacity: 1 !important;
+    -webkit-backface-visibility: hidden;
+    -webkit-transition: -webkit-transform 1s;
+  }
+
+  #github span:last-child {
+    -webkit-transform: rotateX(180deg);
+  }
+  
+  #github:hover span:first-child {
+    -webkit-transform: rotateX(180deg);
+  }
+
+  #github:hover span:last-child {
+    -webkit-transform: rotateX(360deg);
+  }
 }
 
