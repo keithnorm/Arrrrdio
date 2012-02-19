@@ -18,9 +18,10 @@ header .container_12 {
   position: relative;
 }
 
+
 #user {
   position: absolute;
-  top: 0;
+  top: 10px;
   right: 10px;
 }
 
@@ -31,6 +32,15 @@ header .container_12 {
 #user h1 {
   color: #fff;
   font-size: 14px;
+}
+
+.auth {
+  background: url('/images/connect.png') no-repeat center;
+  display: block;
+  height: 17px;
+  width: 110px;
+  overflow: hidden;
+  text-indent: -150px;
 }
 
 #alert {
@@ -64,7 +74,7 @@ ul h2 {
   background: #fefefe;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, .5);
   border-radius: 10px;
-  margin: -40px auto 80px auto;
+  margin: -28px 10px 80px 10px;
   padding: 20px;
   position: relative;
 }
@@ -96,7 +106,7 @@ ul h2 {
   overflow: hidden;
 }
 
-#search_results ul li, #top_charts li {
+#search_results ul li, #top_charts li, .albums li {
   float: left;
   margin: 0 20px 20px 0;
   width: 200px;
@@ -107,7 +117,11 @@ ul h2 {
   clear: both;
 }
 
-#search_results img, #top_charts img {
+#search_results ul li:nth-child(4n), #top_charts li:nth-child(4n), .albums li:nth-child(4n) {
+  margin-right: 0;
+}
+
+#search_results img, #top_charts img , .albums img{
   width: 200px;
   height: 200px;
 }
@@ -243,7 +257,7 @@ body {
 .container_12 {
   margin-left: auto;
   margin-right: auto;
-  width: 960px;
+  width: 920px;
 }
 
 /* `Grid >> Global
@@ -341,7 +355,7 @@ body {
 }
 
 .container_12 .grid_12 {
-  width: 940px;
+  width: 900px;
 }
 
 /* `Prefix Extra Space >> 12 Columns

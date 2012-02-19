@@ -1,0 +1,11 @@
+<h1>{{ title }}</h1>
+<ul class='albums'>
+  {{# albums }}
+    <li>
+      <a class='' href='#albums/{{ get "key" }}'>
+        <img src='{{ get "icon" }}'>
+      </a>
+    </li>
+  {{/ albums }}
+</ul>
+

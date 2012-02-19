@@ -5,6 +5,10 @@ html
     link(rel='stylesheet', href='/css/base.css')
     script
       var playbackToken = "#{ playbackToken }";
+
+    - if(loggedIn)
+      script
+        var currentUser = JSON.parse('!{ currentUser }');
     script(src='/browserify.js')
     script(src='/js/handlebars.js')
     script(src='/js/jquery.js')
@@ -18,8 +22,10 @@ html
     header
       .container_12
         #user
-          #info
-          a(href='#profile') Edit Profile 
+          - if(loggedIn)
+            #info
+          - else
+            a(class='auth button', href='/oauth/login') Rdio Connect
         
         h1.grid_12
           a(href='#')

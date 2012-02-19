@@ -13,9 +13,23 @@ var token = 'rkwa3zkamu9h9mfep7uk6mem87mmd2bxzjxhr9xdskh9p7hchm8ad8feddhmch9j';
 var secret = 'PPjCSNFSkKru';
 	
 var app = express.createServer();
+var AppConfig = {};
 
 app.set('views', __dirname + '/app/views');
 app.set('view engine', 'jade');
+
+
+app.configure('development', function(){
+  AppConfig.URL = 'localhost:3090';
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function(){
+  AppConfig.URL = 'arrrrdio.herokuapp.com';
+  app.use(express.errorHandler());
+});
+console.log('URL IS', AppConfig.URL.replace(/:\d{4}/, ''));
+
 
 //oauth setup
 app.use(express.logger());
@@ -32,6 +46,10 @@ app.dynamicHelpers({
 	session: function(req, res){
 		return req.session;
 	},
+
+  currentUser: function(req, res) {
+    return JSON.stringify(req.session.user);
+  },
 
   loggedIn: function(req, res) {
     return req.session.oauth_access_token;
@@ -52,38 +70,27 @@ app.configure(function(){
 var rdio = require('rdio')({
   rdio_api_key: 'mpmzsmhezn5xutcp8mruuws4', 
   rdio_api_shared: '8h6jJmmNQV',
-  callback_url: 'http://arrrrdio.herokuapp.com/oauth/callback'
+  callback_url: 'http://' + AppConfig.URL + '/oauth/callback'
 });
+
+console.log("callback is", 'http://' + AppConfig.URL + '/oauth/callback');
 
 // Routes
 //require('./routes/site')(app, rdio);
 
 app.get('/', function(req, res){
-  
-  rdio.api(
+  rdio.getPlaybackToken(
     req.session.oauth_access_token,
     req.session.oauth_access_token_secret,
-    {
-      method: 'getTopCharts',
-      type: 'Track',
-      count: 10
-    }, function(err, data, response) {
+    AppConfig.URL.replace(/:\d{4}/, ''),
+    function(err, data, response) {
       //if(err) throw new Error(err);
-      
-      rdio.getPlaybackToken(
-        req.session.oauth_access_token,
-        req.session.oauth_access_token_secret,
-        'arrrrdio.herokuapp.com',
-        function(err, data, response) {
-          //if(err) throw new Error(err);
-          console.log("IN HERE", data);
-          res.render('layout', {
-            body: 'hi',
-            layout: false,
-            playbackToken: JSON.parse(data).result
-          });
-        }
-      );
+      console.log("IN HERE", data);
+      res.render('layout', {
+        body: 'hi',
+        layout: false,
+        playbackToken: JSON.parse(data).result
+      });
     }
   );
 });
@@ -95,7 +102,7 @@ app.get('/top_charts', function(req, res) {
     {
       method: 'getTopCharts',
       type: 'Track',
-      count: 10
+      count: 12
     },
     function(err, data, response) {
       if(err) throw new Error(err);
@@ -158,7 +165,7 @@ app.get('/search/:query', function(req, res) {
       query: req.params.query,
       types: 'Artist, Albums, Songs',
       count: 30
-    }, 
+    },
     function(err, data, response) {
       res.send(JSON.parse(data).result);
     }
@@ -221,7 +228,23 @@ app.get('/albums/:id', function(req, res) {
   );
 });
 
-var port = process.env.PORT || 3000;
+app.get('/users/:id', function(req, res) {
+  rdio.api(
+    req.session.oauth_access_token,
+    req.session.oauth_access_token_secret,
+    {
+      method: 'getHeavyRotation',
+      user: req.params.id,
+      type: 'albums',
+      limit: 12
+    }, 
+    function(err, data, response) {
+      res.send(JSON.parse(data).result);
+    }
+  );
+});
+
+var port = process.env.PORT || 3090;
 app.listen(port, function() {
   console.log("Listening on " + port);
 });

@@ -7,6 +7,10 @@ App = {
     albums: 'a',
     artists: 'r',
     tracks: 't'
+  },
+
+  loggedIn: function() {
+    return typeof currentUser != 'undefined';
   }
 };
 
@@ -31,14 +35,18 @@ App.Router = Backbone.Router.extend({
   },
 
   root: function() {
-    var topCharts = new App.TopCharts();
-    topCharts.fetch({
-      success: function(resp) {
-        new App.Views.TopCharts({
-          tracks: resp
-        });
-      }
-    });
+    if(App.loggedIn())
+      this._renderUserHeavyRotation();
+    else {
+      var topCharts = new App.TopCharts();
+      topCharts.fetch({
+        success: function(resp) {
+          new App.Views.TopCharts({
+            tracks: resp
+          });
+        }
+      });
+    }
   },
 
   search: function(query) {
@@ -64,14 +72,19 @@ App.Router = Backbone.Router.extend({
   },
 
   profile: function() {
-    console.log('profile');
-    App.currentUser || (App.currentUser = new App.User({
-      firstName: 'Keith',
-      lastName: 'Norman'
-    }));
-
     new App.Views.Profile({
       user: App.currentUser
+    });
+  },
+
+  _renderUserHeavyRotation: function() {
+    var albums =  new App.UsersHeavyRotation();
+    albums.fetch({
+      success: function(albums, resp) {
+        new App.Views.Albums({
+          albums: albums
+        });
+      }
     });
   }
 });
@@ -123,6 +136,13 @@ App.TopCharts = Backbone.Collection.extend({
   url: '/top_charts'
 });
 
+App.Albums = Backbone.Collection.extend({ model: App.Album });
+App.UsersHeavyRotation = App.Albums.extend({
+  url: function() {
+    return '/users/' + App.currentUser.get('key');
+  }
+});
+
 App.Views.Application = Backbone.View.extend({
   el: 'body',
   userTemplate: Templates['user.html'],
@@ -159,6 +179,24 @@ App.Views.Application = Backbone.View.extend({
   playTrack: function(e) {
     var track = $(e.target).data('track') || $(e.target).parents('a').data('track');
     App.player.play(track);
+  }
+});
+
+App.Views.Albums = Backbone.View.extend({
+  el: '#body',
+  template: Templates['albums.html'],
+  title: 'You Seem to Like These',
+    
+  initialize: function() {
+    this.albums = this.options.albums.models;
+    this.render();
+  },
+
+  render: function() {
+    var template = Handlebars.compile(this.template);
+    this.$el.html(
+      template(this)
+    );
   }
 });
 
@@ -355,10 +393,7 @@ App.Views.Player = Backbone.View.extend({
 });
 
 $(function() {
-  App.currentUser = new App.User({
-    firstName: 'Keith',
-    lastName: 'Norman'
-  });
+  App.currentUser = new App.User(window.currentUser || {});
   new App.Views.Application({});
   App.router = new App.Router();
   Backbone.history.start();
@@ -376,4 +411,30 @@ $.fn.serialize = (function(oldSerialize) {
       return oldSerialize.apply(this, arguments);
   };
 })($.fn.serialize);
+
+
+Groupon = {};
+Groupon.refreshCSS = function() {
+  var i,a,s;
+  a=document.getElementsByTagName('link');
+  for(i=0;i<a.length;i++){
+    s=a[i];
+    if(s.rel.toLowerCase().indexOf('stylesheet')>=0&&s.href) {
+      var h=s.href.replace(/(&|%5C?)forceReload=\d+/,'');
+      s.href=h+(h.indexOf('?')>=0?'&':'?')+'forceReload='+(new Date().valueOf());
+    }
+  }
+};
+//start sass watch command like this
+//sass --watch public/stylesheets/sass:public/stylesheets --load-path public/stylesheets/sass --load-path public/stylesheets/sass/base --load-path --load-path public/stylesheets/sass/base --load-path public/stylesheets/sass/app/shared --debug-info --require ./lib/sass_extensions.rb --require ./lib/asset_fingerprint_cache.rb
+
+$(document).bind('focus', function(e){
+ Groupon.refreshCSS();
+});
+//
+$(document).bind('keydown', function(e){
+// // mapped to ctrl + R, but feel free to change it if you want
+ if(e.keyCode == 82 && e.ctrlKey)
+  Groupon.refreshCSS();
+});
 
