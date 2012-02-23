@@ -125,7 +125,6 @@ App.SearchResults = Backbone.Collection.extend({
   },
 
   parse: function(resp) {
-    console.log('hi', resp);
     return resp.results;
   },
 
@@ -161,7 +160,6 @@ App.Friends = Backbone.Collection.extend({
   model: App.User,
 
   url: function() {
-    console.log(this);
     return '/users/' + this.user.get('key') + '/friends';
   },
 
@@ -192,7 +190,6 @@ App.Views.Application = Backbone.View.extend({
   },
 
   updateUserInfo: function(user) {
-    console.log('args', arguments);
     var template = Handlebars.compile(this.userTemplate);
     $(this.userTemplateEl).html(
       template(App.currentUser)
@@ -287,7 +284,6 @@ App.Views.Friends = Backbone.View.extend({
   },
 
   render: function() {
-    console.log(this);
     var template = Handlebars.compile(this.template);
     this.$el.html(
       template(this)
@@ -340,6 +336,26 @@ App.Views.Notification = Backbone.View.extend({
   }
 });
 
+App.Queue = Backbone.Collection.extend({
+  model: App.Track,
+  position: 0,
+  next: function() {
+    if(this.length && this.length > this.position){
+      this.position++;
+      return this.at(this.position);
+    }
+    else 
+      this.position = 0;
+  },
+
+  prev: function() {
+    if(this.position > 0) {
+      this.position--;
+      return this.at(this.position);
+    }
+  }
+});
+
 App.Views.Player = Backbone.View.extend({
   swfUrl: 'http://www.rdio.com/api/swf/',
   el: '#player_container',
@@ -357,11 +373,14 @@ App.Views.Player = Backbone.View.extend({
     this.renderedSWF = false;
     this.track = new App.Track();
     this.isPlaying = false;
+    this.justQueued = false;
+    this.queue = new App.Queue([]);
     this.render();
     this.track.bind('change:name', this.render.bind(this));
     this.track.bind('change:position', this.changedPosition.bind(this));
     this.bind('paused', this.onPause);
     this.bind('playing', this.onPlay);
+    this.bind('change:state', this.onStateChanged.bind(this));
   },
 
   play: function(track) {
@@ -371,14 +390,59 @@ App.Views.Player = Backbone.View.extend({
     }
     if(track && track.key) {
       this.track.set(track);
-      console.log(this.track);
       this.player.rdio_play(track.key);
+      if(this.shouldQueue())
+        this.addToQueue({source: track.albumKey, position: track.trackNum});
     }
     else //resume
       this.player.rdio_play();
     this.isPlaying = true;
     this.trigger('playing');
     return this;
+  },
+
+  shouldQueue: function() {
+    //kinda dumb, just seeing if we are on the album page
+    return (/albums\/a[\w]+/).test(window.location.hash);
+  },
+
+  onStateChanged: function(state) {
+    switch(state) {
+      case 1:
+        this.justQueued = false;
+        break;
+      case 2: 
+        this.next();
+        break;
+    }
+  },
+
+  prev: function() {
+    if(App.player.isPlaying && !this.justQueued){
+      this.justQueued = !this.justQueued;
+      var prev = App.player.queue.prev();
+      App.player.play(prev.toJSON());
+    }
+  },
+
+  next: function() {
+    if(App.player.isPlaying && !this.justQueued){
+      this.justQueued = !this.justQueued;
+      var next = App.player.queue.next();
+      App.player.play(next.toJSON());
+    }
+  },
+
+  addToQueue: function(options) {
+    var album = new App.Album({
+      id: options.source
+    });
+    album.fetch({
+      success: function(album, resp) {
+        this.queue.add(album.get('tracks'));
+        this.queue.position = (options.position - 1) || 0;
+      }.bind(this)
+    });
   },
 
   stop: function() {
@@ -389,7 +453,6 @@ App.Views.Player = Backbone.View.extend({
   },
 
   pause: function() {
-    console.log('pause');
     this.isPlaying = false;
     this.player.rdio_pause();
     this.trigger('paused');
@@ -397,9 +460,7 @@ App.Views.Player = Backbone.View.extend({
   },
 
   render: function() {
-    console.log('RENDERING', this.track);
     if(!this.renderedSWF) {
-      console.log('rendering swf');
       swfobject.embedSWF(this.swfUrl, 'player', '1', '1', '9.0.0','', App.Views.Player.flashvars, App.Views.Player.params);
       this.renderedSWF = true;
     }
@@ -447,11 +508,33 @@ App.Views.Player = Backbone.View.extend({
 	},
 
 	playStateChanged: function(state) {
-    console.log(state);
+    App.player.trigger('change:state', state);
+    switch(state) {
+      case 0:
+        App.player.trigger('paused');
+        break;
+      case 1:
+        App.player.trigger('playing');
+        break;
+      case 2: 
+        break;
+      case 3:
+        console.log('buffering state');
+        break;
+      case 4:
+        console.log('puased satte');
+        break;
+    }
 	},
 
-  playingTrackChanged: function() {
-    console.log('changed', arguments);
+  playingSourceChanged: function(source) {
+    console.log('source changed', source);
+  },
+
+  playingTrackChanged: function(track) {
+    console.log('adding to queeu', track.albumKey);
+    App.player.track.set(track);
+    //App.player.player.rdio_queue(track.albumKey);
   },
 
   positionChanged: function(position) {

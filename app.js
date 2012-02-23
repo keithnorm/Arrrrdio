@@ -258,6 +258,22 @@ app.get('/users/:id/friends', function(req, res) {
   );
 });
 
+app.get('/users/:id/play_state', function(req, res) {
+  rdio.api(
+    req.session.oauth_access_token,
+    req.session.oauth_access_token_secret,
+    {
+      method: 'getPlayerState',
+      user: req.params.id,
+      extras: 'Track.artistRadioKey',
+      playstate_format: 2
+    }, 
+    function(err, data, response) {
+      res.send(JSON.parse(data).result);
+    }
+  );
+});
+
 var port = process.env.PORT || 3090;
 app.listen(port, function() {
   console.log("Listening on " + port);
