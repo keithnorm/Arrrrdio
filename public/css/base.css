@@ -172,13 +172,17 @@ form input[type="text"] {
   padding-left: 0;
 }
 
-#player_ui {
-  background: rgba(0, 0, 0, .5);
-  bottom: 0;
+#player_container {
+  bottom: -150px;
   left: 0;
-  padding: 10px 10px 10px 20px;
   position: fixed;
   width: 100%;
+}
+
+#player_ui {
+  background: rgba(0, 0, 0, .5);
+  overflow: auto;
+  padding: 10px 10px 10px 20px;
 }
 
 #player_ui .controls {
@@ -216,6 +220,7 @@ form input[type="text"] {
   background: rgba(0, 0, 0, .8);
   border-radius: 6px;
   clear: left;
+  cursor: pointer;
   display: inline-block;
   padding: 3px;
   width: 400px;

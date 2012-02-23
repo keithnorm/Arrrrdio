@@ -366,7 +366,8 @@ App.Views.Player = Backbone.View.extend({
 
   events: {
     'click #player_ui .stop': 'pause',
-    'click #player_ui .play': 'play'
+    'click #player_ui .play': 'play',
+    'click .bar': 'onSeek'
   },
 
   initialize: function() {
@@ -433,6 +434,15 @@ App.Views.Player = Backbone.View.extend({
     }
   },
 
+  seek: function(pos) {
+    this.player.rdio_seek(pos);
+  },
+
+  onSeek: function(e) {
+    var pos = (e.offsetX / $(e.target).width()) * this.track.get('duration');
+    this.seek(pos);
+  },
+
   addToQueue: function(options) {
     var album = new App.Album({
       id: options.source
@@ -476,6 +486,7 @@ App.Views.Player = Backbone.View.extend({
   },
 
   onPlay: function() {
+    this.$el.animate({bottom: 0});
     this.btn.html(this.pauseBtnCode);
   },
 
